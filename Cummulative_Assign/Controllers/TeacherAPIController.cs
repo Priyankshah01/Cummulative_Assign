@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Web.Http;
 using Cummulative_Assign.Models;
@@ -7,12 +7,23 @@ using MySql.Data.MySqlClient;
 
 namespace Cummulative_Assign.Controllers
 {
+    /// <summary>
+    /// API Controller for accessing teacher data.
+    /// This controller provides endpoints to retrieve a list of teachers
+    /// and find a specific teacher by their ID.
+    /// </summary>
     public class TeacherAPIController : ApiController
     {
         private readonly SchoolDbContext cummulative_assign1 = new SchoolDbContext();
 
+        /// <summary>
+        /// Retrieves a list of teachers from the database.
+        /// Allows optional searching by teacher first name, last name, hire date, or salary.
+        /// </summary>
+        /// <param name="SearchKey">An optional search key to filter teachers by name, hire date, or salary.</param>
+        /// <returns>A list of teacher objects.</returns>
         [HttpGet]
-        [Route("api/TeacherData/ListTeachers/{SearchKey?}")]
+        [Route("api/TeacherData/ListTeachers/{SearchKey?}")]  
         public IEnumerable<Teacher> ListTeachers(string SearchKey = null)
         {
             // Create a connection to the database
@@ -23,7 +34,6 @@ namespace Cummulative_Assign.Controllers
             MySqlCommand cmd = Conn.CreateCommand();
             cmd.CommandText = "SELECT * FROM Teachers WHERE LOWER(teacherfname) LIKE LOWER(@Key) OR LOWER(teacherlname) LIKE LOWER(@Key) OR LOWER(CONCAT(teacherfname, ' ', teacherlname)) LIKE LOWER(@Key) or hiredate Like @Key or DATE_FORMAT(hiredate, '%d-%m-%Y') Like @Key or salary LIKE @Key ";
             cmd.Parameters.AddWithValue("@Key", "%" + SearchKey + "%");
-
             cmd.Prepare();
 
             // Execute the query
@@ -65,6 +75,11 @@ namespace Cummulative_Assign.Controllers
             return Teachers;
         }
 
+        /// <summary>
+        /// Retrieves a specific teacher from the database based on the given ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the teacher.</param>
+        /// <returns>The teacher object with details, or null if no teacher is found.</returns>
         [HttpGet]
         [Route("api/TeacherData/FindTeacher/{id}")]
         public Teacher FindTeacher(int id)
@@ -96,7 +111,6 @@ namespace Cummulative_Assign.Controllers
                 NewTeacher.Salary = Convert.ToDecimal(ResultSet["salary"]);
             }
             ResultSet.Close(); // Close the result set
-
 
             // Close the database connection
             Conn.Close();
