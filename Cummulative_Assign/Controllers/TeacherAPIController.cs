@@ -22,19 +22,18 @@ namespace Cummulative_Assign.Controllers
         /// </summary>
         /// <param name="SearchKey">An optional search key to filter teachers by name, hire date, or salary.</param>
         /// <returns>A list of teacher objects.</returns>
-        [HttpGet]
-        [Route("api/TeacherData/ListTeachers/{SearchKey?}")]  
-        public IEnumerable<Teacher> ListTeachers(string SearchKey = null)
-        {
-            // Create a connection to the database
-            MySqlConnection Conn = cummulative_assign1.AccessDatabase();
-            Conn.Open();
+ [HttpGet]
+ [Route("api/TeacherData/ListTeachers")]
+ public IEnumerable<Teacher> ListTeachers(string searchKey)
+ {
+     // Create a connection to the database
+     MySqlConnection Conn = cummulative_assign1.AccessDatabase();
+     Conn.Open();
 
-            // Prepare SQL query with optional search key
-            MySqlCommand cmd = Conn.CreateCommand();
-            cmd.CommandText = "SELECT * FROM Teachers WHERE LOWER(teacherfname) LIKE LOWER(@Key) OR LOWER(teacherlname) LIKE LOWER(@Key) OR LOWER(CONCAT(teacherfname, ' ', teacherlname)) LIKE LOWER(@Key) or hiredate Like @Key or DATE_FORMAT(hiredate, '%d-%m-%Y') Like @Key or salary LIKE @Key ";
-            cmd.Parameters.AddWithValue("@Key", "%" + SearchKey + "%");
-            cmd.Prepare();
+     // Prepare SQL query to retrieve all teachers
+     MySqlCommand cmd = Conn.CreateCommand();
+     cmd.CommandText = "SELECT * FROM Teachers";
+     cmd.Prepare();
 
             // Execute the query
             MySqlDataReader ResultSet = cmd.ExecuteReader();
@@ -80,7 +79,7 @@ namespace Cummulative_Assign.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the teacher.</param>
         /// <returns>The teacher object with details, or null if no teacher is found.</returns>
-        [HttpGet]
+                [HttpGet]
         [Route("api/TeacherData/FindTeacher/{id}")]
         public Teacher FindTeacher(int id)
         {
