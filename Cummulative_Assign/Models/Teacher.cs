@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,5 +25,8 @@ namespace Cummulative_Assign.Models
         public DateTime HireDate { get; set; }
 
         public decimal Salary { get; set; }
+
+        public virtual ICollection<Course> Courses { get; set; } // Plural 'Courses' for collection
+
     }
 }
