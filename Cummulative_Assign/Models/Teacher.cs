@@ -25,5 +25,8 @@ namespace Cummulative_Assign.Models
         public DateTime HireDate { get; set; }
 
         public decimal Salary { get; set; }
+
+        public virtual ICollection<Course> Courses { get; set; } // Plural 'Courses' for collection
+
     }
 }

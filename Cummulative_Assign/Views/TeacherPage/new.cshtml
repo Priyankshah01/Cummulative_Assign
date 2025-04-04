@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "New";
+}
+<script>
+    window.onload = function () {
+        //Required Variables
+        var formHandle = document.forms.add_teacher;
+
+        // Enhanced validation function
+        function validateTeacherData() {
+            let isValid = true;
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            // 1. Validate First Name (not empty)
+            const firstName = document.getElementById('TeacherFname').value.trim();
+            if (firstName === '') {
+                document.querySelector('#TeacherFname + .error-message').textContent = 'First name is required';
+                isValid = false;
+            }
+
+            // 2. Validate Last Name (not empty)
+            const lastName = document.getElementById('TeacherLname').value.trim();
+            if (lastName === '') {
+                document.querySelector('#TeacherLname + .error-message').textContent = 'Last name is required';
+                isValid = false;
+            }
+
+            // 3. Validate Employee Number format (T followed by digits)
+            const empNumber = document.getElementById('EmployeeNumber').value.trim();
+            const empNumberPattern = /^T\d+$/;
+            if (!empNumberPattern.test(empNumber)) {
+                document.querySelector('#EmployeeNumber + .error-message').textContent = 'Employee number must be "T" followed by digits (e.g. T123)';
+                isValid = false;
+            }
+
+            // 4. Validate Hire Date (not in future)
+            const hireDate = new Date(document.getElementById('HireDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (hireDate > today) {
+                document.querySelector('#HireDate + .error-message').textContent = 'Hire date cannot be in the future';
+                isValid = false;
+            }
+
+            // 5. Validate Salary (positive number)
+            const salary = parseFloat(document.getElementById('Salary').value);
+            if (isNaN(salary) || salary <= 0) {
+                document.querySelector('#Salary + .error-message').textContent = 'Salary must be a positive number';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Listeners
+        formHandle.onsubmit = function (e) {
+            if (!validateTeacherData()) {
+                e.preventDefault(); // Prevent form submission if validation fails
+            }
+        };
+
+        // Add real-time validation for employee number format
+        document.getElementById('EmployeeNumber').addEventListener('input', function () {
+            const empNumber = this.value.trim();
+            const errorElement = document.querySelector('#EmployeeNumber + .error-message');
+
+            if (empNumber === '') {
+                errorElement.textContent = '';
+            } else if (!/^T\d*$/.test(empNumber)) {
+                errorElement.textContent = 'Must start with "T" followed by digits';
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+    }
+</script>
+
+<div id="containershow">
+    <nav class="my-3">
+        <a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
+    </nav>
+    <h2>New Teacher</h2>
+
+    <form method="POST" action="/TeacherPage/Create/" name="add_teacher">
+        
+        <div class="form-group">
+            <label for="TeacherFname">First Name:</label>
+            <input type="text" class="form-control" id="TeacherFname" name="TeacherFname" placeholder="Enter first name" />
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="mt-2 form-group">
+            <label for="TeacherLname">Last Name:</label>
+            <input type="text" class="form-control" id="TeacherLname" name="TeacherLname" placeholder="Enter last name" />
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="mt-2 form-group">
+            <label for="EmployeeNumber">Employee Number:</label>
+            <input type="text" class="form-control" id="EmployeeNumber" name="EmployeeNumber" placeholder="Enter employee number" />
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="mt-2 form-group">
+            <label for="HireDate">Hire Date:</label>
+            <input type="date" class="form-control" id="HireDate" name="HireDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <span class="error-message text-danger"></span>
+        </div>
+        <div class="mt-2 form-group">
+            <label for="Salary">Salary:</label>
+            <input type="number" step=".01" class="form-control" id="Salary" name="Salary" placeholder="Enter salary" />
+            <span class="error-message text-danger"></span>
+        </div>
+        <button type="submit" class="mt-2 btn btn-primary">Add Teacher</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <p class="mt-3 text-danger">@ViewBag.Message</p>
+    }
+</div>

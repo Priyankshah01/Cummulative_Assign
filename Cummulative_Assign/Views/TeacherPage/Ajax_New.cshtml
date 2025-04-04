@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Ajax_New";
+}
+
+<div id="containershow">
+    <nav class="my-3">
+        <a class="navlink" href="/TeacherPage/List">Back To Teachers</a>
+    </nav>
+    <h2>New Teacher with AJAX</h2>
+
+    <div class="form-group">
+        <label for="TeacherFname">First Name:</label>
+        <input type="text" class="form-control" id="TeacherFname" name="TeacherFname" placeholder="Enter first name" />
+        <span class="error-message text-danger" id="TeacherFnameError"></span>
+    </div>
+    <div class="mt-2 form-group">
+        <label for="TeacherLname">Last Name:</label>
+        <input type="text" class="form-control" id="TeacherLname" name="TeacherLname" placeholder="Enter last name" />
+        <span class="error-message text-danger" id="TeacherLnameError"></span>
+    </div>
+    <div class="mt-2 form-group">
+        <label for="EmployeeNumber">Employee Number:</label>
+        <input type="text" class="form-control" id="EmployeeNumber" name="EmployeeNumber" placeholder="Enter employee number (e.g., T1234)" />
+        <span class="error-message text-danger" id="EmployeeNumberError"></span>
+    </div>
+    <div class="mt-2 form-group">
+        <label for="HireDate">Hire Date:</label>
+        <input type="date" class="form-control" id="HireDate" name="HireDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        <span class="error-message text-danger" id="HireDateError"></span>
+    </div>
+    <div class="mt-2 form-group">
+        <label for="Salary">Salary:</label>
+        <input type="number" step=".01" class="form-control" id="Salary" name="Salary" placeholder="Enter salary" />
+        <span class="error-message text-danger" id="SalaryError"></span>
+    </div>
+    <button onclick="AddTeacher();" class="mt-2 btn btn-primary">Add Teacher</button>
+    <p class="mt-3" id="ResponseText"></p>
+</div>
+
+<script>
+    function validateForm() {
+        let isValid = true;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Clear previous errors
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+        // Validate First Name
+        const firstName = document.getElementById("TeacherFname").value.trim();
+        if (!firstName) {
+            document.getElementById("TeacherFnameError").textContent = "First name is required";
+            isValid = false;
+        }
+
+        // Validate Last Name
+        const lastName = document.getElementById("TeacherLname").value.trim();
+        if (!lastName) {
+            document.getElementById("TeacherLnameError").textContent = "Last name is required";
+            isValid = false;
+        }
+
+        // Validate Employee Number
+        const empNumber = document.getElementById("EmployeeNumber").value.trim();
+        const empNumberPattern = /^T\d+$/;
+        if (!empNumber) {
+            document.getElementById("EmployeeNumberError").textContent = "Employee number is required";
+            isValid = false;
+        } else if (!empNumberPattern.test(empNumber)) {
+            document.getElementById("EmployeeNumberError").textContent = "Must start with 'T' followed by digits";
+            isValid = false;
+        }
+
+        // Validate Hire Date
+        const hireDate = new Date(document.getElementById("HireDate").value);
+        if (hireDate > today) {
+            document.getElementById("HireDateError").textContent = "Hire date cannot be in the future";
+            isValid = false;
+        }
+
+        // Validate Salary
+        const salary = parseFloat(document.getElementById("Salary").value);
+        if (isNaN(salary) || salary <= 0) {
+            document.getElementById("SalaryError").textContent = "Salary must be a positive number";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function AddTeacher() {
+        // Clear previous messages
+        document.getElementById("ResponseText").textContent = "";
+
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+
+        // Get form values
+        const teacherData = {
+            TeacherFname: document.getElementById("TeacherFname").value.trim(),
+            TeacherLname: document.getElementById("TeacherLname").value.trim(),
+            EmployeeNumber: document.getElementById("EmployeeNumber").value.trim(),
+            HireDate: document.getElementById("HireDate").value,
+            Salary: parseFloat(document.getElementById("Salary").value)
+        };
+
+        // Make AJAX call
+        fetch("/api/TeacherData/AddTeacher", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(teacherData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("ResponseText").textContent = "Teacher added successfully!";
+                document.getElementById("ResponseText").className = "mt-3 text-success";
+                // Clear form
+                document.querySelectorAll('input').forEach(input => input.value = "");
+                document.getElementById("HireDate").value = new Date().toISOString().split('T')[0];
+            })
+            .catch(error => {
+                let errorMessage = "Error adding teacher";
+                if (error.Message) {
+                    if (error.Message.includes("Employee Number")) {
+                        document.getElementById("EmployeeNumberError").textContent = error.Message;
+                    } else {
+                        errorMessage = error.Message;
+                    }
+                }
+                document.getElementById("ResponseText").textContent = errorMessage;
+                document.getElementById("ResponseText").className = "mt-3 text-danger";
+            });
+    }
+</script>
