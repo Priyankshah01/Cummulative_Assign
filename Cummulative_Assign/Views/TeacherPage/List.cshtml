@@ -1,24 +1,32 @@
-﻿@model IEnumerable<Cummulative_Assign.Models.Teacher>
+@model IEnumerable<Cummulative_Assign.Models.Teacher>
 @{
     ViewBag.Title = "List";
 }
 
-<h2 style="text-align: center; color: #333;">List of Teacheres</h2>
+<h2 style="text-align: center; color: #333;">List of Teachers</h2>
+
+
 
 <!-- Search Form -->
 <form action="/TeacherPage/List" method="GET" style="margin-bottom: 15px; text-align: center;">
-    <label for="SearchKey" style="font-weight: bold;">Search:</label>
-    <input type="text" name="SearchKey" id="SearchKey" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" />
+    <label for="SearchKey" style="font-weight: bold;">Search by Hire Date:</label>
+    <input type="date" name="SearchKey" id="SearchKey" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" />
     <input type="submit" value="Search" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" />
 </form>
+
+<nav class="mb-3">
+    <a class="navlink row" href="/TeacherPage/New">Add New Teacher</a>
+    <a class="navlink row " href="/TeacherPage/Ajax_New">Add New Teacher With AJAX</a>
+</nav>
 
 <!-- Teacher Table -->
 <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; text-align: left;">
     <thead>
         <tr style="background-color: #f2f2f2;">
             <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Teacher Code</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Teacher Name</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Teacher First Name</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Teacher Last Name</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Hire Date</th>
             <th style="padding: 10px; border: 1px solid #ddd;">Action</th>
         </tr>
     </thead>
@@ -29,6 +37,7 @@
                 <td style="padding: 10px; border: 1px solid #ddd;">@_Teacher.TeacherId</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@_Teacher.TeacherFname</td>
                 <td style="padding: 10px; border: 1px solid #ddd;">@_Teacher.TeacherLname</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">@_Teacher.HireDate.ToString("yyyy-MM-dd")</td>
                 <td style="padding: 10px; border: 1px solid #ddd;"><a href="/TeacherPage/Show/@_Teacher.TeacherId" style="color: #007bff; text-decoration: none;">Show Details</a></td>
             </tr>
         }
