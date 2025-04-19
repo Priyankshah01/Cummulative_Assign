@@ -60,18 +60,19 @@ namespace Cummulative_Assign.Controllers
             return View(NewTeacher);
         }
 
+        /// <summary>
+        /// Displays a form to add a new teacher.
+        /// </summary>
+        /// <returns>The view displaying a form to add a new teacher.</returns>
         public ActionResult New()
         {
             return View();
         }
 
         /// <summary>
-        /// Displays a form to add a new teacher.
+        /// Displays a form to add a new teacher using AJAX request.
         /// </summary>
         /// <returns>The view displaying a form to add a new teacher using AJAX request.</returns>
-        /// <example>
-        /// GET : /TeacherPage/Ajax_New
-        /// </example>
         public ActionResult Ajax_New()
         {
             return View();
@@ -90,17 +91,6 @@ namespace Cummulative_Assign.Controllers
         /// Returns a 200 OK response if the teacher is added successfully.
         /// Returns a 400 Bad Request response if the provided information is missing or incorrect.
         /// </returns>
-        /// <example>
-        /// Example of POST request body
-        /// POST /Teacher/Create
-        /// {
-        ///     "TeacherFname": "Priyank",
-        ///     "TeacherLname": "Shah",
-        ///     "EmployeeNumber": "T1234",
-        ///     "HireDate": "2025-04-01",
-        ///     "Salary": 65
-        /// }
-        /// </example>
         [HttpPost]
         public ActionResult Create(string TeacherFname, string TeacherLname, string EmployeeNumber, DateTime HireDate, decimal? Salary)
         {
@@ -131,9 +121,6 @@ namespace Cummulative_Assign.Controllers
         /// </summary>
         /// <param name="id">The ID of the teacher to delete.</param>
         /// <returns>The view displaying a confirmation page to delete the teacher.</returns>
-        /// <example>
-        /// GET : /Teacher/DeleteConfirm/{id}
-        /// </example>
         public ActionResult DeleteConfirm(int id)
         {
             TeacherAPIController controller = new TeacherAPIController();
@@ -146,9 +133,6 @@ namespace Cummulative_Assign.Controllers
         /// </summary>
         /// <param name="id">The ID of the teacher to delete.</param>
         /// <returns>The view displaying a confirmation page to delete the teacher using AJAX request.</returns>
-        /// <example>
-        /// GET : /Teacher/Ajax_DeleteConfirm/{id}
-        /// </example>
         public ActionResult Ajax_DeleteConfirm(int id)
         {
             TeacherAPIController controller = new TeacherAPIController();
@@ -161,16 +145,110 @@ namespace Cummulative_Assign.Controllers
         /// </summary>
         /// <param name="id">The ID of the teacher to delete.</param>
         /// <returns>A response indicating the success or failure of the operation.</returns>
-
         [HttpPost]
         public ActionResult Delete(int id)
         {
             TeacherAPIController controller = new TeacherAPIController();
             controller.DeleteTeacher(id);
 
-           
             // Return the view to list page
             return RedirectToAction("List");
+        }
+
+        /// <summary>
+        /// Displays a form to edit an existing teacher
+        /// </summary>
+        /// <param name="id">The ID of the teacher to edit</param>
+        /// <returns>The edit view with the teacher's current information</returns>
+        public ActionResult Edit(int id)
+        {
+            TeacherAPIController controller = new TeacherAPIController();
+            Teacher selectedTeacher = controller.FindTeacher(id);
+
+            if (selectedTeacher == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(selectedTeacher);
+        }
+
+        /// <summary>
+        /// Updates an existing teacher with the provided information
+        /// </summary>
+        /// <param name="id">The ID of the teacher to update</param>
+        /// <param name="teacher">The teacher object with updated information</param>
+        /// <returns>Redirects to the Show view if successful, returns to Edit view with errors if not</returns>
+        [HttpPost]
+        public ActionResult Update(int id, Teacher teacher)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", teacher);
+            }
+
+            TeacherAPIController api = new TeacherAPIController();
+            var result = api.UpdateTeacher(id, teacher);
+
+            if (result is System.Web.Http.Results.OkResult)
+            {
+                return RedirectToAction("Show", new { id });
+            }
+            else
+            {
+                ViewBag.Error = "Error updating teacher";
+                return View("Edit", teacher);
+            }
+        }
+
+        /// <summary>
+        /// Displays a form to edit an existing teacher using AJAX
+        /// </summary>
+        /// <param name="id">The ID of the teacher to edit</param>
+        /// <returns>The AJAX edit view with the teacher's current information</param>
+        public ActionResult Ajax_Edit(int id)
+        {
+            TeacherAPIController controller = new TeacherAPIController();
+            Teacher selectedTeacher = controller.FindTeacher(id);
+
+            if (selectedTeacher == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(selectedTeacher);
+        }
+
+        /// <summary>
+        /// Updates an existing teacher using AJAX
+        /// </summary>
+        /// <param name="id">The ID of the teacher to update</param>
+        /// <param name="TeacherInfo">Teacher object containing updated information</param>
+        /// <returns>JSON result indicating success or failure</returns>
+        [HttpPost]
+        public JsonResult Ajax_Update(int id, Teacher TeacherInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                TeacherAPIController controller = new TeacherAPIController();
+                var result = controller.UpdateTeacher(id, TeacherInfo);
+
+                if (result is System.Web.Http.Results.OkResult)
+                {
+                    return Json(new { success = true, message = "Teacher updated successfully" });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Error updating teacher" });
+                }
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Invalid data",
+                errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
     }
 }

@@ -262,6 +262,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\EnableCorsAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\StudentApiController.cs" />
+    <Compile Include="Controllers\StudentPageController.cs" />
     <Compile Include="Controllers\TeacherAPIController.cs" />
     <Compile Include="Controllers\TeacherPageController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -346,12 +348,19 @@
     <Content Include="Views\TeacherPage\Ajax_DeleteConfirm.cshtml" />
     <Content Include="Views\TeacherPage\Ajax_New.cshtml" />
     <Content Include="Views\TeacherPage\DeleteConfirm.cshtml" />
+    <Content Include="Views\TeacherPage\Edit.cshtml" />
+    <Content Include="Views\StudentPage\Edit.cshtml" />
+    <Content Include="Views\StudentPage\List.cshtml" />
+    <Content Include="Views\StudentPage\Show.cshtml" />
+    <Content Include="Views\StudentPage\New.cshtml" />
+    <Content Include="Views\StudentPage\DeletConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Course\" />
     <Folder Include="Views\SchoolDbContext\" />
     <Folder Include="Views\Startup\" />
+    <Folder Include="Views\StudentApi\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\bootstrap.min.js.map" />

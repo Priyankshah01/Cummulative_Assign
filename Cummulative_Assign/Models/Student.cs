@@ -1,21 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Runtime.Serialization;
 
 namespace Cummulative_Assign.Models
 {
-     /// <summary>
-     /// Represents a student in the school system.
-     /// </summary>
-     public class Student
+    /// <summary>
+    /// Represents a student in the school system
+    /// </summary>
+    [DataContract]
+    public class Student
     {
-        // Properties of the Student entity
-        public int StudentId;
-        public string StudentFname;
-        public string StudentLname;
-        public string StudentNumber;
-        public DateTime EnrolDate;
+        [DataMember]
+        public int StudentId { get; set; }
+
+        [DataMember]
+        public string StudentFname { get; set; }
+
+        [DataMember]
+        public string StudentLname { get; set; }
+
+        [DataMember]
+        public string StudentNumber { get; set; }
+
+        [DataMember]
+        public DateTime EnrolDate { get; set; }
     }
 }

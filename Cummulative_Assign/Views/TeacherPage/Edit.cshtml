@@ -1,0 +1,141 @@
+﻿@model Cummulative_Assign.Models.Teacher
+
+@{
+    ViewBag.Title = "Edit Teacher";
+}
+
+<h2>Edit Teacher</h2>
+
+@using (Html.BeginForm("Update", "TeacherPage", new { id = Model.TeacherId }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.TeacherId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TeacherFname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TeacherFname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TeacherFname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TeacherLname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TeacherLname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TeacherLname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmployeeNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmployeeNumber, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmployeeNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.HireDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.HireDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.HireDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Salary, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @Html.ActionLink("Cancel", "Show", new { id = Model.TeacherId }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+<!-- AJAX Update Section -->
+<div class="ajax-section" style="margin-top: 30px; display: none;">
+    <h3>AJAX Update</h3>
+    <div id="ajax-message" class="alert" style="display: none;"></div>
+    <button id="ajax-update-btn" class="btn btn-info">Update via AJAX</button>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function() {
+            // Show AJAX section for demonstration
+            $('.ajax-section').show();
+
+            // AJAX Update functionality
+            $('#ajax-update-btn').click(function() {
+                // Get form data
+                var teacherData = {
+                    TeacherId: $('#TeacherId').val(),
+                    TeacherFname: $('#TeacherFname').val(),
+                    TeacherLname: $('#TeacherLname').val(),
+                    EmployeeNumber: $('#EmployeeNumber').val(),
+                    HireDate: $('#HireDate').val(),
+                    Salary: $('#Salary').val()
+                };
+
+                // Show loading state
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Updating...');
+
+                // Make AJAX call
+                $.ajax({
+                    url: '@Url.Action("Ajax_Update", "TeacherPage", new { id = Model.TeacherId })',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(teacherData),
+                    success: function(response) {
+                        if (response.success) {
+                            showMessage('Teacher updated successfully!', 'success');
+                            // Optional: redirect or refresh data
+                        } else {
+                            showMessage(response.message, 'danger');
+                            // Display validation errors if any
+                            if (response.errors) {
+                                var errorHtml = '<ul>';
+                                $.each(response.errors, function(index, error) {
+                                    errorHtml += '<li>' + error + '</li>';
+                                });
+                                errorHtml += '</ul>';
+                                showMessage(errorHtml, 'danger');
+                            }
+                        }
+                    },
+                    error: function() {
+                        showMessage('An error occurred while updating the teacher.', 'danger');
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text('Update via AJAX');
+                    }
+                });
+            });
+
+            function showMessage(message, type) {
+                var $messageDiv = $('#ajax-message');
+                $messageDiv.removeClass('alert-success alert-danger')
+                           .addClass('alert-' + type)
+                           .html(message)
+                           .show()
+                           .delay(5000)
+                           .fadeOut();
+            }
+        });
+    </script>
+}

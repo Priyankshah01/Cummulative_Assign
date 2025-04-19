@@ -11,7 +11,7 @@ namespace Cummulative1_schooldb.Models
         // Credentials for accessing the database
         private static string User { get { return "root"; } }       // Username
         private static string Password { get { return ""; } }   // Password
-        private static string Database { get { return "cummulative_assign1"; } } // Database name
+        private static string Database { get { return "cummulative_assign3"; } } // Database name
         private static string Server { get { return "localhost"; } } // Server address
         private static string Port { get { return "3306"; } }       // Port number
 
